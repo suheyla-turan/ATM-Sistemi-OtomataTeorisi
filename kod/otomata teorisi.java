@@ -1,6 +1,8 @@
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-public class otomata_teorisi_projesi { 
+public class otomata_teorisi {
 
     public static final String Q0 = "q0";
     public static final String Q1 = "q1";
@@ -40,7 +42,7 @@ public class otomata_teorisi_projesi {
     public static final String BAKIYE_SORGULA = "bakiye_sorgula";
     public static final String PARA_CEK = "para_cek";
     public static final String PARA_YATIR = "para_yatir";
-    public static final String TRANSFER_SEC = "trasnfer_sec";
+    public static final String TRANSFER_SEC = "transfer_sec";
     public static final String TUTAR_GIR = "tutar_gir";
     public static final String GECERSİZ_TUTAR = "gecersiz_tutar";
     public static final String BAKIYE_YETERLI = "bakiye_yeterli";
@@ -71,8 +73,9 @@ public class otomata_teorisi_projesi {
     public static final String IPTAL_ZAMAN_ASIMI = "q28";
 
     public static void main(String args[]) { 
+        System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
         String currentState = Q0;
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in, StandardCharsets.UTF_8);
 
         System.out.println("ATM Başlatıldı. Mevcut Durum: " + currentState);
 
@@ -82,6 +85,7 @@ public class otomata_teorisi_projesi {
             String input = scanner.nextLine();
 
             if (input.equalsIgnoreCase("exit")) break;
+            input = input.trim();
             currentState = transition(currentState, input);
             System.out.println("Yeni Durum: " + currentState); 
         }
@@ -131,9 +135,10 @@ public class otomata_teorisi_projesi {
             }
 
             private static String IslemSecimi(String currentState, String input) { 
+                // Q6 -> Q7 epsilon geçişi: Q6'ya ulaşınca otomatik Q7'ye geç,
+                // sonra gelen input Q7'de işlenir
+                if (currentState.equals(Q6)) currentState = Q7;
                 switch (currentState) { 
-                    case Q6:
-                        return Q7;
                     case Q7:
                         if (input.equals("bakiye_sorgula")) return Q8;
                         else if (input.equals("para_cek")) return Q9;
@@ -168,7 +173,7 @@ public class otomata_teorisi_projesi {
                     case Q14: if (input.equals("devam")) return Q7; break;
                     case Q15: if (input.equals("devam")) return Q7; break;
                     case Q16: if (input.equals("nakit_alindi")) return Q17; break;
-                    case q17: if (input.equals("devam")) return Q26; break;
+                    case Q17: if (input.equals("devam")) return Q26; break;
                 }
                 return currentState;
             }
@@ -184,7 +189,7 @@ public class otomata_teorisi_projesi {
                     case Q19: if (input.equals("devam")) return Q20; break;
                     case Q20: if (input.equals("devam")) return Q26; break;
                 }
-                return currentSate;
+                return currentState;
             }
 
             private static boolean isTransfer(String s) { 
@@ -192,12 +197,13 @@ public class otomata_teorisi_projesi {
             }
 
             private static String Transfer(String currentState, String input) { 
+                // Q21 -> Q22 epsilon geçişi
+                if (currentState.equals(Q21)) currentState = Q22;
                 switch (currentState) { 
                 case Q11:
                      if (input.equals("hesap_gir")) return Q21;
                      else if (input.equals("gecersiz_hesap")) return Q11;
                     break;
-                case Q21: return Q22;
                 case Q22:
                      if (input.equals("tutar_gir")) return Q23;
                      else if (input.equals("gecersiz_tutar")) return Q22;
@@ -223,7 +229,7 @@ public class otomata_teorisi_projesi {
                      else if (input.equals("makbuz_istemiyorum")) return Q27;
                      break;
                 case Q27: if (input.equals("kart_cikar")) return Q0; break;
-                case q28: return Q0;
+                case Q28: return Q0;
             }
             return currentState;
         }
